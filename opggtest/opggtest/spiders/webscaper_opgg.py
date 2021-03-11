@@ -17,23 +17,25 @@ import numpy as np
 4) make sure there is an empty csv file named 'output.csv' in the same folder as this file. 
 """
 
-path = Path("ingameid3.csv")
-df = pd.read_csv(path)
-urls = df['opgg_url'].tolist()
-print(urls)
+# path = Path("ingameid3.csv")
+# df = pd.read_csv(path)
+# urls = df['opgg_url'].tolist()
 
 class ProductSpider(scrapy.Spider):
     name = "product_spider"
     allowed_domains = ['op.gg']
 
 
-    start_urls = urls
-        
+    # start_urls = urls
+    start_urls = ['https://www.op.gg/summoner/userName=T1+Cuzz']
 
     def __init__(self):
+
         self.driver = webdriver.Chrome("/Users/younwoo/Downloads/chromedriver")
-    
+        self.driver.maximize_window()
+        
     def parse(self, response):
+
         i = 0
         self.driver.get(response.url)
 
