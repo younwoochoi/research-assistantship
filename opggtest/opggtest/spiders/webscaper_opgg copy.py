@@ -17,21 +17,21 @@ import numpy as np
 4) make sure there is an empty csv file named 'output.csv' in the same folder as this file. 
 """
 
-path = Path("ingameid3.csv")
-df = pd.read_csv(path)
-urls = df['opgg_url'].tolist()
+# path = Path("ingameid3.csv")
+# df = pd.read_csv(path)
+# urls = df['opgg_url'].tolist()
 
 class ProductSpider(scrapy.Spider):
     name = "product_spider"
     allowed_domains = ['op.gg']
 
 
-    start_urls = urls
-    #start_urls = ['https://www.op.gg/summoner/userName=T1+Cuzz']
+    # start_urls = urls
+    start_urls = ['https://www.op.gg/summoner/userName=T1+Cuzz']
 
     def __init__(self):
 
-        self.driver = webdriver.Chrome("/Users/younwoo/Downloads/chromedriver")
+        self.driver = webdriver.Chrome("/Users/younwoo/Downloads/chromedriver_89")
         self.driver.maximize_window()
         
     def parse(self, response):
@@ -39,7 +39,7 @@ class ProductSpider(scrapy.Spider):
         i = 0
         self.driver.get(response.url)
 
-        while True and i < 7:
+        while True and i < 1:
 
             try:
                 next = self.driver.find_element_by_xpath('//div[@class="GameMoreButton Box"]/a')
@@ -83,7 +83,7 @@ class ProductSpider(scrapy.Spider):
         
         time.sleep(1)
 
-        game_lists = sel.xpath("//div[@class='GameItemList']")
+        game_lists = sel.xpath("//div[@class='GameItemList']").extract()
         
         usrname = sel.xpath("//div[@class='Profile']/div[@class='Information']/span/text()").extract()
         
@@ -112,18 +112,19 @@ class ProductSpider(scrapy.Spider):
                 
                 game_summary = usrname+date+champion+result+kda+game_type+rank+players+t1_t2_baron+t1_t2_drag+t1_t2_towers+t1_kills_totalGold+t2_kills_totalGold+game_length+op_socres+op_rankings+kdas +game_id
                 
-                # timelines = sel.xpath(path + "//li[contains(@class, 'Result-')]")
+                timelines = sel.xpath(path + "//li[contains(@class, 'Result-')]")
                 
-                # timeline = []
-                # for k in range(len(timelines)):
-                #     info = self.extract_timeline(path, sel, k)
-                #     timeline.append(info)
+                timeline = []
+                for k in range(len(timelines)):
+                    info = self.extract_timeline(path, sel, k)
+                    timeline.append(info)
 
-                # game_summary.append(timeline)
+                game_summary.append(timeline)
 
                 with open('output.csv', 'a') as f:
                     wr = csv.writer(f)
                     wr.writerow(game_summary)
+
         
     def extract_timeline(self, path, sel, k):
         path_2 = path + "//li[contains(@class, 'Result-')][{0}]".format(k+1)

@@ -9,37 +9,28 @@ import pandas as pd
 from pathlib import Path
 import numpy as np
 
-"""
-=== Note ===
-1) change "ingameid3.csv" in line 18
-2) change 'opgg_url' (line 21) to a name of the column for users' url in an excel file.
-3) change the path to chromedriver in line 32
-4) make sure there is an empty csv file named 'output.csv' in the same folder as this file. 
-"""
-
-path = Path("ingameid3.csv")
-df = pd.read_csv(path)
-urls = df['opgg_url'].tolist()
+#path= Path("ingameid3.csv")
+#df= pd.read_csv(path)
+#urls = df['opgg_url'].tolist()
+#print(urls)
 
 class ProductSpider(scrapy.Spider):
     name = "product_spider"
     allowed_domains = ['op.gg']
 
 
-    start_urls = urls
-    #start_urls = ['https://www.op.gg/summoner/userName=T1+Cuzz']
+    #start_urls= urls
+    start_urls = ["https://www.op.gg/summoner/userName=현%20솔"]
+        
 
     def __init__(self):
-
         self.driver = webdriver.Chrome("/Users/younwoo/Downloads/chromedriver")
-        self.driver.maximize_window()
-        
+    
     def parse(self, response):
-
         i = 0
         self.driver.get(response.url)
 
-        while True and i < 7:
+        while True and i < 1:
 
             try:
                 next = self.driver.find_element_by_xpath('//div[@class="GameMoreButton Box"]/a')
@@ -56,17 +47,17 @@ class ProductSpider(scrapy.Spider):
             button.click()
             time.sleep(1)
 #=============================#
-        # next3 = self.driver.find_elements_by_xpath('//li[@data-tab-show-class="MatchDetailContent-teamAnalysis"]//a')
+        next3 = self.driver.find_elements_by_xpath('//li[@data-tab-show-class="MatchDetailContent-teamAnalysis"]//a')
 
-        # for button in next3:
-        #     button.click()
-        #     time.sleep(1) 
+        for button in next3:
+            button.click()
+            time.sleep(1) 
 
-        # next4 = self.driver.find_elements_by_xpath('//li[@data-tab-show-class="TeamAnalysis-TeamTimeLine"]//a')
+        next4 = self.driver.find_elements_by_xpath('//li[@data-tab-show-class="TeamAnalysis-TeamTimeLine"]//a')
 
-        # for button in next4:
-        #     button.click()
-        #     time.sleep(1)
+        for button in next4:
+            button.click()
+            time.sleep(1)
 #===============================
              
             
@@ -111,29 +102,24 @@ class ProductSpider(scrapy.Spider):
                 game_id = sel.xpath(path + "//div[contains(@class, 'GameItem')]/@data-game-id").extract()
                 
                 game_summary = usrname+date+champion+result+kda+game_type+rank+players+t1_t2_baron+t1_t2_drag+t1_t2_towers+t1_kills_totalGold+t2_kills_totalGold+game_length+op_socres+op_rankings+kdas +game_id
+                #print(game_summary)
+                #with open('outputs.csv', 'a') as f:
+                    #wr = csv.writer(f)
+                    #wr.writerow(game_summary)
                 
-                # timelines = sel.xpath(path + "//li[contains(@class, 'Result-')]")
+                timelines = sel.xpath(path + "//li[contains(@class, 'Result-')]")
                 
-                # timeline = []
-                # for k in range(len(timelines)):
-                #     info = self.extract_timeline(path, sel, k)
-                #     timeline.append(info)
-
-                # game_summary.append(timeline)
-
-                with open('output.csv', 'a') as f:
-                    wr = csv.writer(f)
-                    wr.writerow(game_summary)
-        
-    def extract_timeline(self, path, sel, k):
-        path_2 = path + "//li[contains(@class, 'Result-')][{0}]".format(k+1)
-        when = sel.xpath(path_2 + "//div[@class='Time']/text()").extract()
-        who = sel.xpath(path_2 + "//span[1]/text()").extract()
-        what = sel.xpath(path_2 + "//b/text()").extract()
-        whom = sel.xpath(path_2 + "//span[2]/text()").extract()
-        return when + who + what + whom
-
-
+                timeline = []
+                for k in range(len(timelines)):
+                    path_2 = path + "//li[contains(@class, 'Result-')][{0}]".format(k+1)
+                    when = sel.xpath(path_2 + "//div[@class='Time']/text()").extract()
+                    who = sel.xpath(path_2 + "//span[1]/text()").extract()
+                    what = sel.xpath(path_2 + "//b/text()").extract()
+                    whom = sel.xpath(path_2 + "//span[2]/text()").extract()
+                    info = when + who + what + whom
+                    timeline.append(info)
+                print(game_summary)
+    #=================================#
         
 
         
