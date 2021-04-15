@@ -1,3 +1,4 @@
+import pandas as pd
 class Machine:
     # implementation omitted
     pass
@@ -30,3 +31,6 @@ if __name__ == '__main__':
     print(isinstance(f, Machine))
 
     type(m) == type(c)
+
+unpickled_df = pd.read_pickle("./pickl.pkl")
+unpickled_df.tail()

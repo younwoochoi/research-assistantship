@@ -82,6 +82,7 @@ class ProductSpider(scrapy.Spider):
         
         for i in range(len(game_lists)):
             game_items = sel.xpath("//div[@class='GameItemList'][{0}]//div[@class = 'GameItemWrap']".format(i+1))
+            each_game = []
             for j in range(len(game_items)):
                 path = "//div[@class='GameItemList'][{0}]//div[@class = 'GameItemWrap'][{1}]".format(i+1, j+1)
                 date = sel.xpath("//div[@class='GameItemList'][{0}]//div[@class = 'GameItemWrap'][{1}]//span[@class='_timeago _timeCountAssigned tip']/@title".format(i+1, j+1)).extract()
@@ -131,10 +132,11 @@ class ProductSpider(scrapy.Spider):
                 timeline.extend(kills) 
                 timeline.extend(deaths)
                 game_summary.append(timeline)
-                print(game_summary)
+                # print(game_summary)
+                each_game.append(game_summary)
                 
                
-                pd.DataFrame(game_summary).to_pickle("./pickl.pkl")
+            pd.DataFrame(each_game).to_pickle("./extract.pkl")
                 # with open('timeline_output.csv', 'a') as f:
                 #     wr = csv.writer(f)
                 #     wr.writerow(game_summary)
